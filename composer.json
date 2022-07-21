@@ -1,0 +1,8 @@
+{
+	"name": "fuseboxy/fuseboxy-datecontrol",
+	"description": "Fuseboxy DateControl - Easy Way to Define Event Start & End",
+	"license": "MIT",
+	"type": "fuseboxy-module",
+	"require": { "fuseboxy/fuseboxy-installer": "*" },
+	"autoload": { "files": [ "app/model/DateControl.php" ] }
+}
