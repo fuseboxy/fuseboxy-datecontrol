@@ -32,22 +32,19 @@ class DateControl {
 	</fusedoc>
 	*/
 	public static function get($dateControl, $key='', $format='Y-m-d H:i') {
+		$result = array();
 		// obtain specific date-control settings
 		$dateRange = Enum::value('DATE_CONTROL', $dateControl);
 		if ( $dateRange === false ) {
 			self::$error = '[DateControl::get] '.Enum::error();
 			return false;
 		}
-		// parse value & apply format
-		// ===> put into container
+		// parse value & put into container
 		$dateRange = array_map('trim', explode('|', $dateRange));
-		$result = array_map(function($date) use ($format){
-			if ( empty($date) or $date == '*' ) return $date;
-			return date($format, strtotime($date));
-		}, [
-			'start' => ( $dateRange[0] ?? null ) ?: null,
-			'end'   => ( $dateRange[1] ?? null ) ?: null,
-		]);
+		$result['start'] = isset($dateRange[0]) ? $dateRange[0] : '';
+		$result['end']   = isset($dateRange[1]) ? $dateRange[1] : '';
+		// apply format
+		foreach ( $result as $key => $val ) if ( !empty($val) and $val != '*' ) $result[$key] = date($format, strtotime($val));
 		// done!
 		return empty($key) ? $result : ( $result[$key] ?? null );
 	}
@@ -102,7 +99,7 @@ class DateControl {
 	public static function isEnded($dateControl) {
 		$end = self::end($dateControl);
 		if ( $end === false ) throw new Exception('[DateControl::isEnded] '.self::error());
-		// when end anytime...
+		// when always end...
 		if ( empty($end) ) return true;
 		// when never end...
 		if ( $end == '*' ) return false;
@@ -137,7 +134,7 @@ class DateControl {
 		if ( $start === false ) throw new Exception('[DateControl::isStarted] '.self::error());
 		// when never start...
 		if ( empty($start) ) return false;
-		// when start anytime...
+		// when always start...
 		if ( $start == '*' ) return true;
 		// when specified...
 		return ( date('YmdHis') >= date('YmdHis', strtotime($start)) );
