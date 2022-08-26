@@ -19,7 +19,7 @@ foreach ( $localeAll as $lang ) {
 
 
 // config
-$scaffold = array(
+$scaffold = array_merge([
 	'beanType' => 'enum',
 	'editMode' => 'inline',
 	'allowDelete' => Auth::userInRole('SUPER'),
@@ -44,7 +44,7 @@ $scaffold = array(
 		'inline_edit' => F::appPath('view/date_control/inline_edit.php'),
 	),
 	'writeLog' => class_exists('Log'),
-);
+], $dateControlScaffold ?? $date_control_scaffold ?? []);
 
 
 // component
