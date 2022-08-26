@@ -1,45 +1,10 @@
-<?php /*
-<fusedoc>
-	<description>
-		generate UI for date-control CRUD operations
-	</description>
-	<io>
-		<in>
-			<structure name="$dateControl" comments="config">
-				<!-- essentials -->
-				<string name="layoutPath" />
-				<string_or_structure name="retainParam" />
-				<!-- permissions -->
-				<boolean name="allowNew" />
-				<boolean name="allowEdit" />
-				<boolean name="allowDelete" />
-				<boolean name="allowToggle" />
-				<boolean name="allowSort" />
-				<!-- filter & order -->
-				<structure name="listFilter">
-					<string name="sql" />
-					<array name="param" />
-				</structure>
-				<string name="listOrder" />
-				<!-- others -->
-				<boolean name="writeLog" />
-			</structure>
-		</in>
-		<out>
-		</out>
-	</io>
-</fusedoc>
-*/
+<?php
+F::redirect('auth&callback='.base64_encode($_SERVER['REQUEST_URI']), !Auth::user());
+F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
 
-
-/*
-// breadcrumb
-$arguments['breadcrumb'] = array('*', 'Setup', 'Date Control');
-
-
-// remark fields in different language
-$localeAll = I18N::localeAll();
+// message fields in different language
+$localeAll = class_exists('I18N') ? I18N::localeAll() : array('en');
 $localeCount = count($localeAll);
 $remarkFields = array();
 foreach ( $localeAll as $lang ) {
@@ -57,10 +22,8 @@ foreach ( $localeAll as $lang ) {
 $scaffold = array(
 	'beanType' => 'enum',
 	'editMode' => 'inline',
-	'allowNew' => Auth::userInRole('SUPER'),
 	'allowDelete' => Auth::userInRole('SUPER'),
-	'allowToggle' => Auth::userInRole('SUPER'),
-	'layoutPath' => F::appPath('view/academic_year/layout.php'),
+	'layoutPath' => F::appPath('view/global/layout.php'),
 	'listFilter' => array('type = ?', ['DATE_CONTROL']),
 	'listOrder' => 'ORDER BY `key` ',
 	'listField' => array(
@@ -72,9 +35,9 @@ $scaffold = array(
 	'fieldConfig' => array_merge([
 		'key' => array('readonly' => !Auth::userInRole('SUPER')),
 		'type' => array('label' => false, 'value' => 'DATE_CONTROL', 'readonly' => true),
+		'value' => array('format' => 'hidden', 'label' => false),
 		'start' => array('format' => 'output'),
 		'end' => array('format' => 'output'),
-		'value' => array('format' => 'hidden', 'label' => false),
 	], $remarkFields),
 	'scriptPath' => array(
 		'row' => F::appPath('view/date_control/row.php'),
@@ -86,4 +49,3 @@ $scaffold = array(
 
 // component
 include F::appPath('controller/scaffold_controller.php');
-*/
