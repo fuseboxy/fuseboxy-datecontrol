@@ -52,7 +52,6 @@ foreach ( $period as $fieldKey => $fieldValue ) :
 			value="<?php echo $fieldValue; ?>"
 			class="form-control scaffold-input-datetime"
 			autocomplete="off"
-			required
 			<?php if ( $fieldValue == '*' ) echo 'readonly'; ?>
 			onchange="
 				// sync values into hidden field
