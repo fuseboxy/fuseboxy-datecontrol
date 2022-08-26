@@ -17,21 +17,21 @@ class DateControl {
 		<io>
 			<in>
 				<string name="$dateControl" example="mainland-apply" />
-				<string name="$key" comments="start|end" optional="yes" />
+				<string name="$startOrEnd" comments="start|end" optional="yes" />
 			</in>
 			<out>
 				<!-- get both start & end -->
-				<structure name="~return~" optional="yes" oncondition="when {$key} not specified">
+				<structure name="~return~" optional="yes" oncondition="when {$startOrEnd} not specified">
 					<date name="start" comments="{null} when not specified & never start; {*} when start anytime" />
 					<date name="end" comments="{null} when not specified & end anytime; {*} when never end" />
 				</structure>
 				<!-- get either start or end -->
-				<date name="~return~" optional="yes" oncondition="when {$key} specified" />
+				<date name="~return~" optional="yes" oncondition="when {$startOrEnd} specified" />
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function get($dateControl, $key='', $format='Y-m-d H:i') {
+	public static function get($dateControl, $startOrEnd='', $format='Y-m-d H:i') {
 		$result = array();
 		// obtain specific date-control settings
 		$dateRange = Enum::value('DATE_CONTROL', $dateControl);
@@ -46,10 +46,10 @@ class DateControl {
 		// apply format
 		foreach ( $result as $key => $val ) if ( !empty($val) and $val != '*' ) $result[$key] = date($format, strtotime($val));
 		// done!
-		return empty($key) ? $result : ( $result[$key] ?? null );
+		return empty($startOrEnd) ? $result : ( $result[$startOrEnd] ?? null );
 	}
 	// alias methods
-	public static function range($dateControl, $key='', $format='Y-m-d H:i') { return self::get($dateControl, $key, $format); }
+	public static function range($dateControl, $startOrEnd='', $format='Y-m-d H:i') { return self::get($dateControl, $startOrEnd, $format); }
 	public static function start($dateControl, $format='Y-m-d H:i') { return self::get($dateControl, 'start', $format); }
 	public static function end($dateControl, $format='Y-m-d H:i') { return self::get($dateControl, 'end', $format); }
 
