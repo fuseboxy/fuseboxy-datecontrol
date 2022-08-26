@@ -28,5 +28,9 @@ $doc->find('div.col-start')->html($period[0] ?? '');
 $doc->find('div.col-end')->html($period[1] ?? '');
 
 
+// highlight active rows
+if ( DateControl::isActive($bean->key) ) $doc->find('.scaffold-row')->addClass('table-warning');
+
+
 // display
 echo $doc;
