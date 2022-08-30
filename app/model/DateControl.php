@@ -79,6 +79,150 @@ class DateControl {
 	/**
 	<fusedoc>
 		<description>
+			check whether all specified date-controls are active
+		</description>
+		<io>
+			<in>
+				<mixed name="$dateControls" comments="array|list|string" delim=",">
+					<string name="+" />
+				</mixed>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isAllActive($dateControls) {
+		
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether all specified date-controls are ended
+		</description>
+		<io>
+			<in>
+				<mixed name="$dateControls" comments="array|list|string" delim=",">
+					<string name="+" />
+				</mixed>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isAllEnded($dateControls) {
+		
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether all specified date-controls are ended
+		</description>
+		<io>
+			<in>
+				<mixed name="$dateControls" comments="array|list|string" delim=",">
+					<string name="+" />
+				</mixed>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isAllStarted($dateControls) {
+		
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether any specified date-controls is active
+		</description>
+		<io>
+			<in>
+				<mixed name="$dateControls" comments="array|list|string" delim=",">
+					<string name="+" />
+				</mixed>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isAnyActive($dateControls) {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether any specified date-controls is active
+		</description>
+		<io>
+			<in>
+				<mixed name="$dateControls" comments="array|list|string" delim=",">
+					<string name="+" />
+				</mixed>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isAnyEnded($dateControls) {
+
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
+			check whether all specified date-controls are ended
+		</description>
+		<io>
+			<in>
+				<mixed name="$dateControls" comments="array|list|string" delim=",">
+					<string name="+" />
+				</mixed>
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function isAnyStarted($dateControls) {
+		
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			check whether specific date-control is ended
 		</description>
 		<io>
