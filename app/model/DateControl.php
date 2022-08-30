@@ -71,12 +71,7 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isActive($dateControl) {
-		return ( self::isStarted($dateControl) and !self::isEnded($dateControl) );
-	}
-	// alias methods
-	public static function active($dateControl) { return self::isActive($dateControl); }
-	public static function inactive($dateControl) { return !self::isActive($dateControl); }
+	public static function isActive($dateControl) { return ( self::isStarted($dateControl) and !self::isEnded($dateControl) ); }
 
 
 
@@ -106,10 +101,6 @@ class DateControl {
 		// when specified...
 		return ( date('YmdHis') > date('YmdHis', strtotime($end)) );
 	}
-	// alias methods
-	public static function ended($dateControl) { return self::isEnded($dateControl); }
-	public static function closed($dateControl) { return self::isEnded($dateControl); }
-	public static function isClosed($dateControl) { return self::isEnded($dateControl); }
 
 
 
@@ -139,10 +130,6 @@ class DateControl {
 		// when specified...
 		return ( date('YmdHis') >= date('YmdHis', strtotime($start)) );
 	}
-	// alias methods
-	public static function opened($dateControl) { return self::isStarted($dateControl); }
-	public static function started($dateControl) { return self::isStarted($dateControl); }
-	public static function isOpened($dateControl) { return self::isStarted($dateControl); }
 
 
 
@@ -171,8 +158,6 @@ class DateControl {
 		// done!
 		return $result;
 	}
-	// alias method
-	public static function remark($dateControl) { return self::message($dateControl); }
 
 
 } // class
