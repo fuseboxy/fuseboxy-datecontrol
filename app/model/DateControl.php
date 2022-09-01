@@ -12,11 +12,41 @@ class DateControl {
 	/**
 	<fusedoc>
 		<description>
+			convert list of enum keys into array
+			===> when any enum key has wildcard (e.g. [%-event], sports-*, ...)
+			===> obtain related enum keys accordingly
+		</description>
+		<io>
+			<in>
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
+					<string name="+" comments="might have wildcard" />
+				</mixed>
+			</in>
+			<out>
+				<array name="~return~">
+					<string name="+" />
+				</array>
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	private static function explodeEnumKeys($enumKeys) {
+		return array_unique(array_merge(...array_map(function($key){
+			return array_keys(Enum::array('DATE_CONTROL', $key));
+		}, is_string($enumKeys) ? explode(',', $enumKeys) : $enumKeys)));
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			obtain start date & end date of specific date-control
 		</description>
 		<io>
 			<in>
-				<string name="$dateControl" example="mainland-apply" />
+				<string name="$enumKey" example="mainland-apply" />
 				<string name="$startOrEnd" comments="start|end" optional="yes" />
 			</in>
 			<out>
@@ -31,10 +61,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function get($dateControl, $startOrEnd='', $format='Y-m-d H:i') {
+	public static function get($enumKey, $startOrEnd='', $format='Y-m-d H:i') {
 		$result = array();
 		// obtain specific date-control settings
-		$dateRange = Enum::value('DATE_CONTROL', $dateControl);
+		$dateRange = Enum::value('DATE_CONTROL', $enumKey);
 		if ( $dateRange === false ) {
 			self::$error = '[DateControl::get] '.Enum::error();
 			return false;
@@ -49,9 +79,9 @@ class DateControl {
 		return empty($startOrEnd) ? $result : ( $result[$startOrEnd] ?? null );
 	}
 	// alias methods
-	public static function range($dateControl, $startOrEnd='', $format='Y-m-d H:i') { return self::get($dateControl, $startOrEnd, $format); }
-	public static function start($dateControl, $format='Y-m-d H:i') { return self::get($dateControl, 'start', $format); }
-	public static function end($dateControl, $format='Y-m-d H:i') { return self::get($dateControl, 'end', $format); }
+	public static function range($enumKey, $startOrEnd='', $format='Y-m-d H:i') { return self::get($enumKey, $startOrEnd, $format); }
+	public static function start($enumKey, $format='Y-m-d H:i') { return self::get($enumKey, 'start', $format); }
+	public static function end($enumKey, $format='Y-m-d H:i') { return self::get($enumKey, 'end', $format); }
 
 
 
@@ -59,11 +89,11 @@ class DateControl {
 	/**
 	<fusedoc>
 		<description>
-			check whether specific date-control is started but not yet ended
+			check whether (single) specific date-control is started and not ended yet
 		</description>
 		<io>
 			<in>
-				<string name="$dateControl" />
+				<string name="$enumKey" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -71,7 +101,7 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isActive($dateControl) { return ( self::isStarted($dateControl) and !self::isEnded($dateControl) ); }
+	public static function isActive($enumKey) { return ( self::isStarted($enumKey) and !self::isEnded($enumKey) ); }
 
 
 
@@ -83,8 +113,8 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<mixed name="$dateControls" comments="array|list|string" delim=",">
-					<string name="+" />
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
+					<string name="+" comments="can have wildcard" />
 				</mixed>
 			</in>
 			<out>
@@ -93,8 +123,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isAllActive($dateControls) {
-		
+	public static function isAllActive($enumKeys) {
+		$enumKeys = self::explodeEnumKeys($enumKeys);
+		if ( $enumKeys === false ) return false;
+		return ( array_sum(array_map(fn($key)=>(int)self::isActive($key), $enumKeys)) == count($enumKeys) );
 	}
 
 
@@ -107,7 +139,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<mixed name="$dateControls" comments="array|list|string" delim=",">
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
 					<string name="+" />
 				</mixed>
 			</in>
@@ -117,8 +149,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isAllEnded($dateControls) {
-		
+	public static function isAllEnded($enumKeys) {
+		$enumKeys = self::explodeEnumKeys($enumKeys);
+		if ( $enumKeys === false ) return false;
+		return ( array_sum(array_map(fn($key)=>(int)self::isEnded($key), $enumKeys)) == count($enumKeys) );
 	}
 
 
@@ -131,7 +165,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<mixed name="$dateControls" comments="array|list|string" delim=",">
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
 					<string name="+" />
 				</mixed>
 			</in>
@@ -141,8 +175,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isAllStarted($dateControls) {
-		
+	public static function isAllStarted($enumKeys) {
+		$enumKeys = self::explodeEnumKeys($enumKeys);
+		if ( $enumKeys === false ) return false;
+		return ( array_sum(array_map(fn($key)=>(int)self::isStarted($key), $enumKeys)) == count($enumKeys) );
 	}
 
 
@@ -155,7 +191,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<mixed name="$dateControls" comments="array|list|string" delim=",">
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
 					<string name="+" />
 				</mixed>
 			</in>
@@ -165,8 +201,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isAnyActive($dateControls) {
-
+	public static function isAnyActive($enumKeys) {
+		$enumKeys = self::explodeEnumKeys($enumKeys);
+		if ( $enumKeys === false ) return false;
+		return ( array_sum(array_map(fn($key)=>(int)self::isActive($key), $enumKeys)) != 0 );
 	}
 
 
@@ -179,7 +217,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<mixed name="$dateControls" comments="array|list|string" delim=",">
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
 					<string name="+" />
 				</mixed>
 			</in>
@@ -189,8 +227,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isAnyEnded($dateControls) {
-
+	public static function isAnyEnded($enumKeys) {
+		$enumKeys = self::explodeEnumKeys($enumKeys);
+		if ( $enumKeys === false ) return false;
+		return ( array_sum(array_map(fn($key)=>(int)self::isEnded($key), $enumKeys)) != 0 );
 	}
 
 
@@ -203,7 +243,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<mixed name="$dateControls" comments="array|list|string" delim=",">
+				<mixed name="$enumKeys" comments="array|list|string" delim=",">
 					<string name="+" />
 				</mixed>
 			</in>
@@ -213,8 +253,10 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isAnyStarted($dateControls) {
-		
+	public static function isAnyStarted($enumKeys) {
+		$enumKeys = self::explodeEnumKeys($enumKeys);
+		if ( $enumKeys === false ) return false;
+		return ( array_sum(array_map(fn($key)=>(int)self::isStarted($key), $enumKeys)) != 0 );
 	}
 
 
@@ -223,11 +265,11 @@ class DateControl {
 	/**
 	<fusedoc>
 		<description>
-			check whether specific date-control is ended
+			check whether (single) specific date-control is ended
 		</description>
 		<io>
 			<in>
-				<string name="$dateControl" />
+				<string name="$enumKey" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -235,8 +277,8 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isEnded($dateControl) {
-		$end = self::end($dateControl);
+	public static function isEnded($enumKey) {
+		$end = self::end($enumKey);
 		if ( $end === false ) throw new Exception('[DateControl::isEnded] '.self::error());
 		// when always end...
 		if ( empty($end) ) return true;
@@ -256,7 +298,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<string name="$dateControl" />
+				<string name="$enumKey" />
 			</in>
 			<out>
 				<boolean name="~return~" />
@@ -264,8 +306,8 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function isStarted($dateControl) {
-		$start = self::start($dateControl);
+	public static function isStarted($enumKey) {
+		$start = self::start($enumKey);
 		if ( $start === false ) throw new Exception('[DateControl::isStarted] '.self::error());
 		// when never start...
 		if ( empty($start) ) return false;
@@ -285,7 +327,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<string name="$dateControl" example="mainland-apply" />
+				<string name="$enumKey" example="mainland-apply" />
 			</in>
 			<out>
 				<string name="~return~" />
@@ -293,8 +335,8 @@ class DateControl {
 		</io>
 	</fusedoc>
 	*/
-	public static function message($dateControl) {
-		$result = Enum::remark('DATE_CONTROL', $dateControl);
+	public static function message($enumKey) {
+		$result = Enum::remark('DATE_CONTROL', $enumKey);
 		if ( $result === false ) {
 			self::$error = '[DateControl::message] Error loading enum remark ('.Enum::error().')';
 			return false;
