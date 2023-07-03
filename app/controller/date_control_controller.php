@@ -3,21 +3,8 @@ F::redirect('auth&callback='.base64_encode($_SERVER['REQUEST_URI']), !Auth::user
 F::error('Forbidden', !Auth::userInRole('SUPER,ADMIN'));
 
 
-
-
-// message fields in different languages
-$localeAll = class_exists('I18N') ? I18N::localeAll() : array('en');
-$remarkFields = array_merge(...array_map(function($lang){
-	$suffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
-	return array(
-		'tmp.beforeMessage'.$suffix => array('label' => ( $lang == 'en' ) ? 'Messages' : '', 'inline-label' => '<small class="d-block text-muted" style="width: 40px;"><b>BEFORE</b></small>', 'pre-help' => ( $lang == 'en' ) ? '' : "<b class='text-info fa-sm'>{$lang}</b>" ),
-		'tmp.afterMessage'.$suffix => array('label' => false, 'inline-label' => '<small class="d-block text-muted" style="width: 40px;"><b>AFTER</b></small>'),
-		'tmp.nowMessage'.$suffix => array('label' => false, 'inline-label' => '<small class="d-block text-muted" style="width: 40px;"><b>NOW</b></small>'),
-		'remark'.$suffix => array('format' => 'hidden', 'label' => false),
-	);
-}, $localeAll));
-
-
+// multi-language (when necessary)
+$localeAll = class_exists('I18N') ? I18N::localeAll() : ['en'];
 
 
 // run!!
@@ -34,18 +21,30 @@ switch ( $fusebox->action ) :
 		]);
 		// merge message fields into {remark}
 		foreach ( $localeAll as $lang ) {
-			$suffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
-			$arguments['data']['remark'.$suffix] = implode(PHP_EOL, [
-				$arguments['data']['tmp']['beforeMessage'.$suffix],
-				$arguments['data']['tmp']['afterMessage'.$suffix],
-				$arguments['data']['tmp']['nowMessage'.$suffix],
+			$langSuffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
+			$arguments['data']['remark'.$langSuffix] = implode(PHP_EOL, [
+				$arguments['data']['tmp']['beforeMessage'.$langSuffix],
+				$arguments['data']['tmp']['afterMessage'.$langSuffix],
+				$arguments['data']['tmp']['nowMessage'.$langSuffix],
 			]);
 		}
 		// remove temp fields
 		unset($arguments['data']['tmp']);
 		// no break & continue to save...
+
+
 	// crud operations
 	default:
+		// determine message fields in different languages
+		$remarkFields = array_merge(...array_map(function($lang){
+			$langSuffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
+			return array(
+				'tmp.beforeMessage'.$langSuffix => array('label' => ( $lang == 'en' ) ? 'Messages' : '', 'inline-label' => '<small class="d-block text-muted" style="width: 40px;"><b>BEFORE</b></small>', 'pre-help' => ( $lang == 'en' ) ? '' : "<b class='text-info fa-sm'>{$lang}</b>" ),
+				'tmp.afterMessage'.$langSuffix => array('label' => false, 'inline-label' => '<small class="d-block text-muted" style="width: 40px;"><b>AFTER</b></small>'),
+				'tmp.nowMessage'.$langSuffix => array('label' => false, 'inline-label' => '<small class="d-block text-muted" style="width: 40px;"><b>NOW</b></small>'),
+				'remark'.$langSuffix => array('format' => 'hidden', 'label' => false),
+			);
+		}, $localeAll));
 		// config
 		$scaffold = array_merge([
 			'beanType' => 'enum',
@@ -65,8 +64,8 @@ switch ( $fusebox->action ) :
 				'key' => array('readonly' => !Auth::userInRole('SUPER')),
 				'type' => array('label' => false, 'value' => 'DATE_CONTROL', 'readonly' => true),
 				'value' => array('format' => 'hidden', 'label' => false),
-				'tmp.startDatetime' => array('label' => 'Start', 'format' => 'text', 'inline-label' => '<small class="d-block text-muted" style="width: 30px;"><b>START</b></small>'),
-				'tmp.endDatetime' => array('label' => 'End', 'format' => 'text', 'inline-label' => '<small class="d-block text-muted" style="width: 30px;"><b>END</b></small>'),
+				'tmp.startDatetime' => array('label' => 'Start', 'format' => 'datetime', 'inline-label' => '<small class="d-block text-muted" style="width: 30px;"><b>START</b></small>'),
+				'tmp.endDatetime' => array('label' => 'End', 'format' => 'datetime', 'inline-label' => '<small class="d-block text-muted" style="width: 30px;"><b>END</b></small>'),
 			], $remarkFields),
 			'scriptPath' => array(
 				'row' => F::appPath('view/date_control/row.php'),
