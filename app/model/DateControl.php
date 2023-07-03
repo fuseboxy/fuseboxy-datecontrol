@@ -12,6 +12,34 @@ class DateControl {
 	/**
 	<fusedoc>
 		<description>
+			check whether specific date-control exists
+		</description>
+		<io>
+			<in>
+				<string name="$enumKey" />
+			</in>
+			<out>
+				<boolean name="~return~" />
+			</out>
+		</io>
+	</fusedoc>
+	*/
+	public static function exists($enumKey) {
+		try {
+			$result = Enum::exists('DATE_CONTROL', $enumKey);
+		} catch (Exception $e) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error checking whether enum exists - '.Enum::error();
+			return false;
+		}
+		return $result;
+	}
+
+
+
+
+	/**
+	<fusedoc>
+		<description>
 			convert list of enum keys into array
 			===> when any enum key has wildcard (e.g. [%-event], sports-*, ...)
 			===> obtain related enum keys accordingly
