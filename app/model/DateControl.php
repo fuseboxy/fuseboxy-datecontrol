@@ -94,7 +94,7 @@ class DateControl {
 		// obtain specific date-control settings
 		$dateRange = Enum::value('DATE_CONTROL', $enumKey);
 		if ( $dateRange === false ) {
-			self::$error = '[DateControl::get] '.Enum::error();
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.Enum::error();
 			return false;
 		}
 		// parse value & put into container
@@ -307,7 +307,7 @@ class DateControl {
 	*/
 	public static function isEnded($enumKey) {
 		$end = self::end($enumKey);
-		if ( $end === false ) throw new Exception('[DateControl::isEnded] '.self::error());
+		if ( $end === false ) throw new Exception('['.__CLASS__.'::'.__FUNCTION__.'] '.self::error());
 		// when always end...
 		if ( empty($end) ) return true;
 		// when never end...
@@ -336,7 +336,7 @@ class DateControl {
 	*/
 	public static function isStarted($enumKey) {
 		$start = self::start($enumKey);
-		if ( $start === false ) throw new Exception('[DateControl::isStarted] '.self::error());
+		if ( $start === false ) throw new Exception('['.__CLASS__.'::'.__FUNCTION__.'] '.self::error());
 		// when never start...
 		if ( empty($start) ) return false;
 		// when always start...
@@ -372,7 +372,7 @@ class DateControl {
 		// obtain remark (of corresponding language)
 		$remark = Enum::remark('DATE_CONTROL', $enumKey);
 		if ( $remark === false ) {
-			self::$error = '[DateControl::message] Error loading enum remark ('.Enum::error().')';
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] Error loading enum remark ('.Enum::error().')';
 			return false;
 		}
 		// convert into array
@@ -383,8 +383,13 @@ class DateControl {
 		if ( $msgType == 'all' ) return $result;
 		if ( in_array($msgType, ['before','after','now']) ) return $result[$msgType];
 		// determine by start & end
-		if ( !DateControl::isStarted($enumKey) ) return $result['before'];
-		if ( DateControl::isEnded($enumKey) ) return $result['after'];
+		try {
+			if ( !self::isStarted($enumKey) ) return $result['before'];
+			if ( self::isEnded($enumKey) ) return $result['after'];
+		} catch (Exception $e) {
+			self::$error = '['.__CLASS__.'::'.__FUNCTION__.'] '.$e->getMessage();
+			return false;
+		}
 		// done!
 		return $result['now'];
 	}

@@ -25,7 +25,9 @@ $doc = Util::phpQuery(ob_get_clean());
 
 // start & end
 foreach ( ['start','end'] as $periodType ) :
-	$doc->find('div.col-tmp-'.$periodType.'Datetime')->html( DateControl::get($bean->key, $periodType) );
+	$tmpValue = DateControl::get($bean->key, $periodType);
+	F::error(DateControl::error(), $tmpValue === false);
+	$doc->find('div.col-tmp-'.$periodType.'Datetime')->html($tmpValue);
 endforeach;
 
 
@@ -35,9 +37,11 @@ foreach ( $localeAll as $lang ) :
 	foreach ( ['before','after','now'] as $msgType ) :
 		$msg = $doc->find('div.col-tmp-'.$msgType.'Message'.$langSuffix);
 		$msg->removeClass('small')->removeClass('text-muted');
-		I18N::set($lang);
-		$msg->html( DateControl::message($bean->key, $msgType) );
-		I18N::reset();
+		if ( class_exists('I18N') ) I18N::set($lang);
+		$tmpMsg = DateControl::message($bean->key, $msgType);
+		F::error(DateControl::error(), $tmpMsg === false);
+		$msg->html($tmpMsg);
+		if ( class_exists('I18N') ) I18N::reset();
 		$msg->prepend('<span class="badge badge-light b-1 small" style="width: 50px;">'.strtoupper($msgType).'</span> ');
 	endforeach;
 endforeach;
@@ -48,8 +52,12 @@ $doc->find('div[class*=col-tmp-beforeMessage__]')->before('<div>--</div>');
 
 
 // highlight or dim (when active or closed)
-if ( DateControl::isActive($bean->key) ) $doc->find('.scaffold-row')->addClass('alert-primary');
-elseif ( DateControl::isEnded($bean->key) ) $doc->find('.scaffold-row')->addClass('text-muted');
+try {
+	if ( DateControl::isActive($bean->key) ) $doc->find('.scaffold-row')->addClass('alert-primary');
+	elseif ( DateControl::isEnded($bean->key) ) $doc->find('.scaffold-row')->addClass('text-muted');
+} catch (Exception $e) {
+	F::error($e->getMessage());
+}
 
 
 // display
