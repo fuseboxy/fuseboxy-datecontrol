@@ -4,15 +4,19 @@
 		<in>
 			<object name="$bean" type="enum">
 				<string name="type" value="DATE_CONTROL" />
-				<string name="key" example="mainland-appfee" />
-				<string name="value" comments="start and end" />
-				<string name="remark" comments="messages" />
+				<string name="key" example="enrol-UG-Y1" />
+				<string name="value|value__{lang}" />
+				<string name="remark|remark__{lang}" />
 			</object>
 		<in>
 		<out />
 	</io>
 </fusedoc>
 */
+// multi-language (when necessary)
+$localeAll = class_exists('I18N') ? I18N::localeAll() : ['en'];
+
+
 // capture original output
 ob_start();
 include F::appPath('view/scaffold/row.php');
@@ -25,15 +29,21 @@ $doc->find('div.col-tmp-endDatetime')->html( DateControl::get($bean->key, 'end')
 
 
 // messages
-foreach ( ['before','after','now'] as $msgType ) :
-	$msg = $doc->find('div.col-tmp-'.$msgType.'Message');
-	$msg->removeClass('small')->removeClass('text-muted');
-	$msg->html( DateControl::message($bean->key, $msgType) );
-	$msg->prepend('<span class="badge badge-light b-1 small" style="width: 50px;">'.strtoupper($msgType).'</span> ');
+foreach ( $localeAll as $lang ) :
+	foreach ( ['before','after','now'] as $msgType ) :
+		$msg = $doc->find('div.col-tmp-'.$msgType.'Message');
+		$msg->removeClass('small')->removeClass('text-muted');
+		$msg->html( DateControl::message($bean->key, $msgType) );
+		$msg->prepend('<span class="badge badge-light b-1 small" style="width: 50px;">'.strtoupper($msgType).'</span> ');
+	endforeach;
 endforeach;
 
 
-// highlight active rows
+// separater for message of different languages
+$doc->find('div[class*=col-tmp-beforeMessage__]')->before('<div>--</div>');
+
+
+// highlight when active
 if ( DateControl::isActive($bean->key) ) $doc->find('.scaffold-row')->addClass('table-warning');
 
 
