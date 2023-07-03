@@ -31,10 +31,13 @@ endforeach;
 
 // messages
 foreach ( $localeAll as $lang ) :
+	$langSuffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
 	foreach ( ['before','after','now'] as $msgType ) :
-		$msg = $doc->find('div.col-tmp-'.$msgType.'Message');
+		$msg = $doc->find('div.col-tmp-'.$msgType.'Message'.$langSuffix);
 		$msg->removeClass('small')->removeClass('text-muted');
+		I18N::set($lang);
 		$msg->html( DateControl::message($bean->key, $msgType) );
+		I18N::reset();
 		$msg->prepend('<span class="badge badge-light b-1 small" style="width: 50px;">'.strtoupper($msgType).'</span> ');
 	endforeach;
 endforeach;
