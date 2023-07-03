@@ -355,22 +355,38 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<string name="$enumKey" example="enrol-UG-Y1" />
+				<string name="$enumKey" example="mainland-apply" />
+				<string name="$msgType" example="auto|before|after|now|all" default="auto" comments="obtain corresponding message according to start & end when auto"
 			</in>
 			<out>
-				<string name="~return~" />
+				<string name="~return~" optional="yes" oncondition="when {msgType} not all" />
+				<structure name="~return~" optional="yes" oncondition="when {msgType=all}">
+					<string name="before|after|now" />
+				</structure>
 			</out>
 		</io>
 	</fusedoc>
 	*/
-	public static function message($enumKey) {
-		$result = Enum::remark('DATE_CONTROL', $enumKey);
-		if ( $result === false ) {
+	public static function message($enumKey, $msgType='auto') {
+		$msgType = strtolower($msgType);
+		// obtain remark (of corresponding language)
+		$remark = Enum::remark('DATE_CONTROL', $enumKey);
+		if ( $remark === false ) {
 			self::$error = '[DateControl::message] Error loading enum remark ('.Enum::error().')';
 			return false;
 		}
+		// convert into array
+		$result = array();
+		$remarkArray = explode(PHP_EOL, $remark, 3);
+		foreach ( ['before','after','now'] as $i => $key ) $result[$key] = $remarkArray[$i] ?? null;
+		// return all or specific type (when necessary)
+		if ( $msgType == 'all' ) return $result;
+		if ( in_array($msgType, ['before','after','now']) ) return $result[$msgType];
+		// determine by start & end
+		if ( !DateControl::isStarted($enumKey) ) return $result['before'];
+		if ( DateControl::isEnded($enumKey) ) return $result['after'];
 		// done!
-		return $result;
+		return $result['now'];
 	}
 
 
