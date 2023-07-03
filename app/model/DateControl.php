@@ -355,7 +355,7 @@ class DateControl {
 		</description>
 		<io>
 			<in>
-				<string name="$enumKey" example="mainland-apply" />
+				<string name="$enumKey" example="enrol-UG-Y1" />
 			</in>
 			<out>
 				<string name="~return~" />
