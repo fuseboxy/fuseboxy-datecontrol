@@ -5,12 +5,12 @@
 			<object name="$bean" type="enum">
 				<string name="type" value="DATE_CONTROL" />
 				<string name="key" example="mainland-appfee" />
-				<list name="value" delim="|">
-					<string name="0" comments="start date" />
-					<string name="1" comments="end date" />
-				</list>
-				<string name="remark" />
+				<string name="value|value__{lang}" />
+				<string name="remark|remark__{lang}" />
 			</object>
+			<array name="$localeAll">
+				<string name="~lang~" example="en|zh-hk|zh-cn|.." />
+			</array>
 		<in>
 		<out>
 			<structure name="data" scope="form">
@@ -23,19 +23,34 @@
 	</io>
 </fusedoc>
 */
+// multi-language (when necessary)
+$localeAll = class_exists('I18N') ? I18N::localeAll() : ['en'];
+
+
 // capture original output
 ob_start();
 include F::appPath('view/scaffold/inline_edit.php');
 $doc = Util::phpQuery(ob_get_clean());
 
 
+// feed value to corresponding temp fields
+foreach ( ['start','end'] as $periodType ) :
+	$doc->find("input[name='data[tmp][{$periodType}Datetime]']")->val( DateControl::get($bean->key, $periodType) );
+endforeach;
+foreach ( ['before','after','now'] as $msgType ) :
+	foreach ( $localeAll as $lang ) :
+		$suffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
+		$doc->find("input[name='data[tmp][{$msgType}Message]']")->val( DateControl::message($bean->key, $msgType) );
+	endforeach;
+endforeach;
+
+/*
 // determine period by value
 $arr = isset($bean->value) ? array_filter(explode('|', $bean->value)) : [];
 $period = array('start' => $arr[0] ?? '', 'end' => $arr[1] ?? '');
 
 
-// start date & end date
-// ===> update hidden [value] field as pipe-delim list
+// always start & never end
 foreach ( $period as $fieldKey => $fieldValue ) :
 	ob_start();
 	?><div class="input-group input-group-sm">
@@ -79,7 +94,7 @@ foreach ( $period as $fieldKey => $fieldValue ) :
 	</div><?php
 	$doc->find("div.col-{$fieldKey} > .scaffold-input")->html(ob_get_clean());
 endforeach;
-
+*/
 
 // display
 echo $doc;

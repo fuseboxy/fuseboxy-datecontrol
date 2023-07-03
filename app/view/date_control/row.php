@@ -24,8 +24,9 @@ $doc = Util::phpQuery(ob_get_clean());
 
 
 // start & end
-$doc->find('div.col-tmp-startDatetime')->html( DateControl::get($bean->key, 'start') );
-$doc->find('div.col-tmp-endDatetime')->html( DateControl::get($bean->key, 'end') );
+foreach ( ['start','end'] as $periodType ) :
+	$doc->find('div.col-tmp-'.$periodType.'Datetime')->html( DateControl::get($bean->key, $periodType) );
+endforeach;
 
 
 // messages
