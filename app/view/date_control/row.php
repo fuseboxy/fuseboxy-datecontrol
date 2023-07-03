@@ -47,8 +47,9 @@ endforeach;
 $doc->find('div[class*=col-tmp-beforeMessage__]')->before('<div>--</div>');
 
 
-// highlight when active
-if ( DateControl::isActive($bean->key) ) $doc->find('.scaffold-row')->addClass('table-warning');
+// highlight or dim (when active or closed)
+if ( DateControl::isActive($bean->key) ) $doc->find('.scaffold-row')->addClass('alert-primary');
+elseif ( DateControl::isEnded($bean->key) ) $doc->find('.scaffold-row')->addClass('text-muted');
 
 
 // display
