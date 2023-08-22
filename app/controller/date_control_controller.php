@@ -22,7 +22,7 @@ switch ( $fusebox->action ) :
 		// merge message fields into {remark}
 		foreach ( $localeAll as $lang ) {
 			$langSuffix = ( $lang == 'en' ) ? '' : ('__'.str_replace('-', '_', $lang));
-			$arguments['data']['remark'.$langSuffix] = implode(PHP_EOL, [
+			$arguments['data']['remark'.$langSuffix] = implode("\n", [
 				$arguments['data']['tmp']['beforeMessage'.$langSuffix],
 				$arguments['data']['tmp']['afterMessage'.$langSuffix],
 				$arguments['data']['tmp']['nowMessage'.$langSuffix],

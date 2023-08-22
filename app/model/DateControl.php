@@ -377,7 +377,7 @@ class DateControl {
 		}
 		// convert into array
 		$result = array();
-		$remarkArray = explode(PHP_EOL, $remark, 3);
+		$remarkArray = explode("\n", $remark, 3);
 		foreach ( ['before','after','now'] as $i => $key ) $result[$key] = $remarkArray[$i] ?? null;
 		// return all or specific type (when necessary)
 		if ( $msgType == 'all' ) return $result;
