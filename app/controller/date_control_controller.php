@@ -57,8 +57,8 @@ switch ( $fusebox->action ) :
 			'listField' => array(
 				'id' => '60',
 				'key|type' => '15%',
-				'tmp.startDatetime|tmp.endDatetime|value' => '20%',
-				implode('|', array_keys($remarkFields)) => '40%',
+				'tmp.startDatetime|tmp.endDatetime|value' => '25%',
+				implode('|', array_keys($remarkFields)) => '35%',
 			),
 			'fieldConfig' => array_merge([
 				'key' => array('readonly' => !Auth::userInRole('SUPER')),
