@@ -1,2 +1,2 @@
-FUSEBOXY DATECONTROL (2.x)
+FUSEBOXY DATECONTROL (1.x)
 ==========================
